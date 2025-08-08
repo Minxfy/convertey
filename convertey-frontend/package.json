@@ -85,7 +85,7 @@
     "@types/epub-gen": "^0.1.2",
     "@types/fluent-ffmpeg": "^2.1.27",
     "@types/html-to-text": "^9.0.4",
-    "@types/node": "^20.17.19",
+    "@types/node": "^20.19.9",
     "@types/pdf-parse": "^1.1.4",
     "@types/pdfkit": "^0.13.9",
     "@types/qrcode": "^1.5.5",
