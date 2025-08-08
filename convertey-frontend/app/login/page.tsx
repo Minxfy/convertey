@@ -5,14 +5,14 @@ import Login from "@/components/login/Login";
 import React, { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Sign In | Cosmo Converter",
+  title: "Sign In | Convertey",
   description:
-    "Sign in to your Cosmo Converter account to access your files, settings, and more.",
+    "Sign in to your Converteyaccount to access your files, settings, and more.",
 };
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-black text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen">
       <div className="stars"></div>
       <Suspense fallback={<p></p>}>
         <Header />

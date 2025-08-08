@@ -33,7 +33,9 @@ export default function LoginPage() {
 
   useEffect(() => {
     const handleAuthRedirects = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session) {
         router.replace("/");
         return;
@@ -93,20 +95,23 @@ export default function LoginPage() {
       }
 
       if (data.user && data.session) {
-        if (typeof window !== 'undefined') {
+        if (typeof window !== "undefined") {
           localStorage.setItem("rememberMe", JSON.stringify(rememberMe));
         }
 
-        // Instead of pushing directly to protected route, 
+        // Instead of pushing directly to protected route,
         // go through auth/callback so cookies are set
         const redirectTo = searchParams?.get("redirect") || "/";
-        window.location.href = `/auth/callback?code=${data.session.access_token}&redirect=${encodeURIComponent(redirectTo)}`;
+        window.location.href = `/auth/callback?code=${
+          data.session.access_token
+        }&redirect=${encodeURIComponent(redirectTo)}`;
       } else {
         setError("Login successful but no user data returned");
         setIsLoading(false);
       }
     } catch (err) {
       setError("An unexpected error occurred");
+      console.error("Login error:", err);
       setIsLoading(false);
     }
   };
@@ -119,8 +124,10 @@ export default function LoginPage() {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`
-        }
+          redirectTo: `${
+            window.location.origin
+          }/auth/callback?redirect=${encodeURIComponent(redirectTo)}`,
+        },
       });
 
       if (error) {
@@ -143,7 +150,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8">
       <div className="stars"></div>
       <Card className="w-full max-w-md bg-white/80 dark:bg-gray-800/90 backdrop-blur-xl border border-slate-200 dark:border-slate-800/30">
         <CardHeader className="text-center pb-6">

@@ -9,12 +9,12 @@ export default function SignUpPage() {
   const [showVerification, setShowVerification] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-black text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen ">
       <div className="stars"></div>
       <Suspense fallback={<p></p>}>
         <Header />
       </Suspense>
-      <SignUp 
+      <SignUp
         showVerification={showVerification}
         setShowVerification={setShowVerification}
       />

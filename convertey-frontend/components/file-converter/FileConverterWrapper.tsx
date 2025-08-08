@@ -179,7 +179,7 @@ export default function FileConverterWrapper() {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-br from-slate-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen flex items-center">
+    <section className="py-20 min-h-screen flex items-center">
       <div className="max-w-4xl mx-auto px-6 w-full">
         {/* Header Section */}
         <div className="text-center mb-12">

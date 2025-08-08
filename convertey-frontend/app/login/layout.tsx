@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Sign Up | Convertey",
-  description:
-    "Sign up for a Convertey account to access your files, settings, and more.",
+  title: "Login | Convertey",
+  description: "Login to your Convertey account.",
 };
 
 export default function SignupLayout({

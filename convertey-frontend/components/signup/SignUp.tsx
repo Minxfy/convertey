@@ -23,7 +23,10 @@ interface SignUpProps {
   setShowVerification: (value: boolean) => void;
 }
 
-export default function SignUpPage({showVerification, setShowVerification}: SignUpProps) {
+export default function SignUpPage({
+  showVerification,
+  setShowVerification,
+}: SignUpProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -82,7 +85,7 @@ export default function SignUpPage({showVerification, setShowVerification}: Sign
         setIsLoading(false);
         return;
       }
-      
+
       // Show verification message
       setShowVerification(true);
     } catch (err) {
@@ -132,7 +135,7 @@ export default function SignUpPage({showVerification, setShowVerification}: Sign
 
   if (showVerification) {
     return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-start justify-center px-4 sm:px-6 lg:px-8 pt-20 sm:py-8 md:py-12">
+      <div className="min-h-screen justify-center px-4 sm:px-6 lg:px-8 pt-20 sm:py-8 md:py-12">
         <div className="stars"></div>
         <Card className="w-full max-w-md bg-white/80 dark:bg-gray-800/90 backdrop-blur-xl border border-slate-200 dark:border-slate-800/30">
           <CardHeader className="text-center pb-6">
@@ -149,9 +152,8 @@ export default function SignUpPage({showVerification, setShowVerification}: Sign
           <CardContent>
             <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 px-4 py-3 rounded-lg text-sm text-center">
               We&apos;ve sent a verification link to <strong>{email}</strong>.
-              Please check your email and click the link to verify your
-              account. You will be redirected to the login page in a few
-              seconds.
+              Please check your email and click the link to verify your account.
+              You will be redirected to the login page in a few seconds.
             </div>
           </CardContent>
           <CardFooter className="flex justify-center">
@@ -169,183 +171,198 @@ export default function SignUpPage({showVerification, setShowVerification}: Sign
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-10">
+    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-10">
       <div className="stars"></div>
       <Card className="w-full max-w-md bg-white/80 dark:bg-gray-800/90 backdrop-blur-xl border border-slate-200 dark:border-slate-800/30">
-      <CardHeader className="text-center pb-6">
-        <div className="mx-auto mb-6 h-16 w-16 rounded-full bg-white shadow-md flex items-center justify-center border-slate-100 border">
-        <Image
-          src="/placeholder.svg"
-          alt="Convertey Logo"
-          width={32}
-          height={32}
-          className="h-8 w-8"
-        />
-        </div>
-        <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-        Join Convertey
-        </CardTitle>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-        Create your account to get started
-        </p>
-      </CardHeader>
-
-      <CardContent className="space-y-6">
-        {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
-          {error}
-        </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-4">
-          <div>
-          <Label htmlFor="name" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-            Full Name
-          </Label>
-          <Input
-            id="name"
-            name="name"
-            type="text"
-            autoComplete="name"
-            required
-            className="h-11 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:border-emerald-500 focus:ring-emerald-500 dark:focus:border-emerald-400"
-            placeholder="Enter your full name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            disabled={isLoading}
-          />
-          </div>
-          <div>
-          <Label htmlFor="email-address" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-            Email Address
-          </Label>
-          <Input
-            id="email-address"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            className="h-11 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:border-emerald-500 focus:ring-emerald-500 dark:focus:border-emerald-400"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            disabled={isLoading}
-          />
-          </div>
-          <div>
-          <Label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-            Password
-          </Label>
-          <div className="relative">
-            <Input
-              id="password"
-              name="password"
-              type={showPassword ? "text" : "password"}
-              autoComplete="new-password"
-              required
-              className="h-11 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:border-emerald-500 focus:ring-emerald-500 dark:focus:border-emerald-400 pr-10"
-              placeholder="Create a password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={isLoading}
+        <CardHeader className="text-center pb-6">
+          <div className="mx-auto mb-6 h-16 w-16 rounded-full bg-white shadow-md flex items-center justify-center border-slate-100 border">
+            <Image
+              src="/placeholder.svg"
+              alt="Convertey Logo"
+              width={32}
+              height={32}
+              className="h-8 w-8"
             />
-            <button
-              type="button"
-              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-              onClick={togglePasswordVisibility}
-              disabled={isLoading}
-            >
-              {showPassword ? (
-                <FaEyeSlash className="h-4 w-4" />
-              ) : (
-                <FaEye className="h-4 w-4" />
-              )}
-            </button>
           </div>
-          </div>
-        </div>
+          <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            Join Convertey
+          </CardTitle>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Create your account to get started
+          </p>
+        </CardHeader>
 
-        <div className="flex items-start space-x-3 mt-6">
-          <input
-          id="terms"
-          name="terms"
-          type="checkbox"
-          className="h-4 w-4 mt-1 border-gray-300 dark:border-gray-600 focus:border-emerald-500 focus:ring-emerald-500 dark:focus:border-emerald-400 rounded"
-          checked={termsAgreed}
-          onChange={(e) => setTermsAgreed(e.target.checked)}
-          disabled={isLoading}
-          />
-          <Label
-          htmlFor="terms"
-          className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed"
-          >
-          By signing up, you agree to our{" "}
-          <Link
-            href="/terms-of-service"
-            className="text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
-          >
-            Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link 
-            href="/privacy" 
-            className="text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
-          >
-            Privacy Policy
-          </Link>
-          </Label>
-        </div>
-
-        <Button
-          type="submit"
-          disabled={isLoading || !termsAgreed || !name.trim() || !email.trim() || !password.trim()}
-          className="w-full h-11 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center mt-6"
-        >
-          {isLoading ? (
-          "Creating account..."
-          ) : (
-          <>
-            Create account
-            <FaArrowRight className="ml-2 h-4 w-4" />
-          </>
+        <CardContent className="space-y-6">
+          {error && (
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-lg text-sm">
+              {error}
+            </div>
           )}
-        </Button>
-        </form>
 
-        <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-          Or continue with
-          </span>
-        </div>
-        </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-4">
+              <div>
+                <Label
+                  htmlFor="name"
+                  className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block"
+                >
+                  Full Name
+                </Label>
+                <Input
+                  id="name"
+                  name="name"
+                  type="text"
+                  autoComplete="name"
+                  required
+                  className="h-11 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:border-emerald-500 focus:ring-emerald-500 dark:focus:border-emerald-400"
+                  placeholder="Enter your full name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              <div>
+                <Label
+                  htmlFor="email-address"
+                  className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block"
+                >
+                  Email Address
+                </Label>
+                <Input
+                  id="email-address"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  className="h-11 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:border-emerald-500 focus:ring-emerald-500 dark:focus:border-emerald-400"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              <div>
+                <Label
+                  htmlFor="password"
+                  className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block"
+                >
+                  Password
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="new-password"
+                    required
+                    className="h-11 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:border-emerald-500 focus:ring-emerald-500 dark:focus:border-emerald-400 pr-10"
+                    placeholder="Create a password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    onClick={togglePasswordVisibility}
+                    disabled={isLoading}
+                  >
+                    {showPassword ? (
+                      <FaEyeSlash className="h-4 w-4" />
+                    ) : (
+                      <FaEye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
 
-        <Button
-        onClick={() => handleOAuthLogin("google")}
-        disabled={isLoading}
-        variant="outline"
-        className="w-full h-11 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-center"
-        >
-        <FcGoogle className="h-5 w-5 mr-3" />
-        Continue with Google
-        </Button>
-      </CardContent>
+            <div className="flex items-start space-x-3 mt-6">
+              <input
+                id="terms"
+                name="terms"
+                type="checkbox"
+                className="h-4 w-4 mt-1 border-gray-300 dark:border-gray-600 focus:border-emerald-500 focus:ring-emerald-500 dark:focus:border-emerald-400 rounded"
+                checked={termsAgreed}
+                onChange={(e) => setTermsAgreed(e.target.checked)}
+                disabled={isLoading}
+              />
+              <Label
+                htmlFor="terms"
+                className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed"
+              >
+                By signing up, you agree to our{" "}
+                <Link
+                  href="/terms-of-service"
+                  className="text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
+                >
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link
+                  href="/privacy"
+                  className="text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
+                >
+                  Privacy Policy
+                </Link>
+              </Label>
+            </div>
 
-      <CardFooter className="flex justify-center">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-        Already have an account?{" "}
-        <Link
-          href="/login"
-          className="font-medium text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
-        >
-          Sign in
-        </Link>
-        </p>
-      </CardFooter>
+            <Button
+              type="submit"
+              disabled={
+                isLoading ||
+                !termsAgreed ||
+                !name.trim() ||
+                !email.trim() ||
+                !password.trim()
+              }
+              className="w-full h-11 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center mt-6"
+            >
+              {isLoading ? (
+                "Creating account..."
+              ) : (
+                <>
+                  Create account
+                  <FaArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
+            </Button>
+          </form>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300 dark:border-gray-600"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                Or continue with
+              </span>
+            </div>
+          </div>
+
+          <Button
+            onClick={() => handleOAuthLogin("google")}
+            disabled={isLoading}
+            variant="outline"
+            className="w-full h-11 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-center"
+          >
+            <FcGoogle className="h-5 w-5 mr-3" />
+            Continue with Google
+          </Button>
+        </CardContent>
+
+        <CardFooter className="flex justify-center">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              className="font-medium text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
+            >
+              Sign in
+            </Link>
+          </p>
+        </CardFooter>
       </Card>
     </div>
   );
