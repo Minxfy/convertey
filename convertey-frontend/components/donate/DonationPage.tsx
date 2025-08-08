@@ -1,20 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Users, Zap, Shield } from "lucide-react";
 import DonationForm from "./DonationForm";
 import ExternalDonationLinks from "./ExternalDonationLinks";
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-);
-
 export default function DonationPage() {
-  const [donationAmount, setDonationAmount] = useState(10);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="container mx-auto px-4 py-16 max-w-6xl">
@@ -34,7 +25,7 @@ export default function DonationPage() {
             secure for millions of users worldwide.
           </p>
 
-          {/* Stats */}
+          {/* Stats
           <div className="flex justify-center mt-12 gap-8 flex-wrap">
             <div className="text-center">
               <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
@@ -55,26 +46,22 @@ export default function DonationPage() {
               <div className="text-sm text-gray-500">Uptime</div>
             </div>
           </div>
+        </div> */}
         </div>
 
         {/* Main Content */}
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Donation Form */}
           <div className="lg:col-span-2">
-            <Card className="shadow-xl border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm">
+            <Card className="flex flex-col shadow-xl border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm h-full">
               <CardHeader>
                 <CardTitle className="text-2xl font-semibold flex items-center gap-2">
-                  <div className="w-2 h-8 bg-gradient-to-b from-emerald-500 to-emerald-600 rounded-full"></div>
-                  Donate with Card
+                  <div className="w-2 h- bg-gradient-to-b from-emerald-500 to-emerald-600 rounded-full"></div>
+                  Donate to Convertey
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <Elements stripe={stripePromise}>
-                  <DonationForm
-                    amount={donationAmount}
-                    setAmount={setDonationAmount}
-                  />
-                </Elements>
+                <DonationForm />
               </CardContent>
             </Card>
           </div>
