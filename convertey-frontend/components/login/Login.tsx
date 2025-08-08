@@ -33,42 +33,33 @@ export default function LoginPage() {
 
   useEffect(() => {
     const handleAuthRedirects = async () => {
-      // Check for password reset tokens and redirect immediately
-      const type = searchParams?.get("type");
-      if (type === "recovery") {
-        console.log(
-          "Detected recovery type in URL. Redirecting to reset-password."
-        );
-        // Ensure any existing session (from recovery link) is cleared before redirecting
-        // This is good practice but might not always be strictly necessary if reset-password handles it.
-        await supabase.auth.signOut();
-        router.replace(`/reset-password?${searchParams.toString()}`);
-        return; // Prevent further execution of useEffect
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        router.replace("/");
+        return;
       }
 
-      // Check for verification success
+      const type = searchParams?.get("type");
+      if (type === "recovery") {
+        await supabase.auth.signOut();
+        router.replace(`/reset-password?${searchParams.toString()}`);
+        return;
+      }
+
       const verified = searchParams?.get("verified");
       if (verified === "true") {
-        console.log("Detected email verification success.");
         setSuccessMessage(
           "Your email has been verified! Please log in with your credentials."
         );
-        // **IMPORTANT:** Sign out after successful email verification.
-        // The user is automatically logged in by clicking the verification link.
-        // We want them to explicitly log in.
         await supabase.auth.signOut();
-        // Clear the 'verified' param from the URL after processing
         const newUrl = new URL(window.location.href);
         newUrl.searchParams.delete("verified");
-        router.replace(newUrl.pathname + newUrl.search); // Replace URL without verified param
+        router.replace(newUrl.pathname + newUrl.search);
       }
 
-      // Check for password reset success message from reset-password page
       const resetMessage = searchParams?.get("message");
       if (resetMessage) {
-        console.log("Detected password reset success message.");
         setSuccessMessage(resetMessage);
-        // Clear the 'message' param from the URL after processing
         const newUrl = new URL(window.location.href);
         newUrl.searchParams.delete("message");
         router.replace(newUrl.pathname + newUrl.search);
@@ -76,34 +67,24 @@ export default function LoginPage() {
     };
 
     handleAuthRedirects();
-  }, [searchParams, supabase, router]); // Dependency array includes router now
+  }, [searchParams, supabase, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
 
-    if (!supabase) {
-      setError("Supabase client not initialized");
-      setIsLoading(false);
-      return;
-    }
-
     try {
-      console.log("Attempting login...");
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password,
       });
 
       if (error) {
-        console.error("Login error:", error);
         if (error.message === "Invalid login credentials") {
           setError("Invalid email or password. Please try again.");
         } else if (error.message === "Email not confirmed") {
-          setError(
-            "Your email is not verified. Please check your inbox for the verification link."
-          );
+          setError("Your email is not verified. Please check your inbox.");
         } else {
           setError(error.message);
         }
@@ -111,18 +92,21 @@ export default function LoginPage() {
         return;
       }
 
-      if (data.user) {
-        console.log("Login successful, redirecting...");
-        localStorage.setItem("rememberMe", JSON.stringify(rememberMe));
-        router.push("/");
+      if (data.user && data.session) {
+        if (typeof window !== 'undefined') {
+          localStorage.setItem("rememberMe", JSON.stringify(rememberMe));
+        }
+
+        // Instead of pushing directly to protected route, 
+        // go through auth/callback so cookies are set
+        const redirectTo = searchParams?.get("redirect") || "/";
+        window.location.href = `/auth/callback?code=${data.session.access_token}&redirect=${encodeURIComponent(redirectTo)}`;
       } else {
-        console.log("No user data returned");
         setError("Login successful but no user data returned");
+        setIsLoading(false);
       }
     } catch (err) {
-      console.error("Unexpected error:", err);
       setError("An unexpected error occurred");
-    } finally {
       setIsLoading(false);
     }
   };
@@ -130,33 +114,26 @@ export default function LoginPage() {
   const handleOAuthLogin = async (provider: "google") => {
     setError(null);
     setIsLoading(true);
-
-    if (!supabase) {
-      setError("Supabase client not initialized");
-      setIsLoading(false);
-      return;
-    }
-
     try {
+      const redirectTo = searchParams?.get("redirect") || "/";
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`
+        }
       });
 
       if (error) {
-        console.error("OAuth error:", error);
         setError(error.message);
         setIsLoading(false);
         return;
       }
 
       if (data.url) {
-        // Redirect to the OAuth provider's login page
         window.location.href = data.url;
       }
-    } catch (err) {
-      console.error("Unexpected OAuth error:", err);
+    } catch {
       setError("An unexpected error occurred during OAuth login");
-    } finally {
       setIsLoading(false);
     }
   };

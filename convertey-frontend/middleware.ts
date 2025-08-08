@@ -1,75 +1,45 @@
 // middleware.ts
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 
 export async function middleware(request: NextRequest) {
-  const { pathname, searchParams } = request.nextUrl;
-  
-  // Allow reset-password route
-  if (pathname.startsWith('/reset-password')) {
-    return NextResponse.next();
-  }
-  
-  // Check if user is in password reset flow
-  const accessToken = searchParams.get('access_token');
-  const type = searchParams.get('type');
-  
-  if (accessToken && type === 'recovery') {
-    // User is in password reset flow, only allow reset-password route
-    const resetUrl = new URL('/reset-password', request.url);
-    resetUrl.searchParams.set('access_token', accessToken);
-    resetUrl.searchParams.set('type', type);
-    const refreshToken = searchParams.get('refresh_token');
-    if (refreshToken) {
-      resetUrl.searchParams.set('refresh_token', refreshToken);
-    }
-    return NextResponse.redirect(resetUrl);
-  }
-
-  // Create Supabase client for other routes
   let response = NextResponse.next();
-  
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) {
+        get(name) {
           return request.cookies.get(name)?.value;
         },
-        set(name: string, value: string, options: any) {
-          request.cookies.set({ name, value, ...options });
-          response = NextResponse.next({ request: { headers: request.headers } });
-          response.cookies.set({ name, value, ...options });
+        set(name, value, options) {
+          response.cookies.set(name, value, options);
         },
-        remove(name: string, options: any) {
-          request.cookies.set({ name, value: '', ...options });
-          response = NextResponse.next({ request: { headers: request.headers } });
-          response.cookies.set({ name, value: '', ...options });
+        remove(name, options) {
+          response.cookies.set(name, "", { ...options, maxAge: 0 });
         },
       },
     }
   );
 
-  // Check if user is authenticated for protected routes
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  // Define protected routes
-  // '/dashboard', '/profile', '/settings'
-  const protectedRoutes = ['/dashboard'];
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-  
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const protectedRoutes = ["/profile", "/settings", "/analytics", "/history"];
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    request.nextUrl.pathname.startsWith(route)
+  );
+
   if (isProtectedRoute && !session) {
-    const loginUrl = new URL('/login', request.url);
-    return NextResponse.redirect(loginUrl);
+    return NextResponse.redirect(new URL("/access-denied", request.url));
   }
 
   return response;
 }
 
 export const config = {
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
-  ],
+  matcher: ["/profile", "/settings", "/((?!_next/static|_next/image|favicon.ico).*)"],
 };
