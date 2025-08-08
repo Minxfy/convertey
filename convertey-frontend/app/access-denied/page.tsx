@@ -9,10 +9,7 @@ export const metadata: Metadata = notFound404Metadata;
 
 export default function NotFound404() {
   return (
-    <div
-      className="min-h-screen bg-gray-100 dark:bg-black text-gray-900 dark:text-gray-100 
-    transition-colors duration-300"
-    >
+    <div className="min-h-screen">
       <div className="stars"></div>
       <Suspense fallback={<p>Loading header...</p>}>
         <Header />

@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next();
+  const response = NextResponse.next();
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -41,5 +41,9 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/profile", "/settings", "/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    "/profile",
+    "/settings",
+    "/((?!_next/static|_next/image|favicon.ico).*)",
+  ],
 };
