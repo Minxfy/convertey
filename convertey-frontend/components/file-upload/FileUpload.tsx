@@ -2,15 +2,24 @@ import React, { useState } from "react";
 import { FileUp, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { FORMAT_GROUPS } from "@/lib/config/fileUpload";
-import type { FileUploadProps } from "@/types/FileUploadProps";
+
+// Updated format groups for only supported conversions
+const FORMAT_GROUPS: Record<string, readonly string[]> = {
+  document: ["pdf", "docx"],
+  image: ["jpg", "jpeg", "png"],
+  presentation: ["pptx", "ppt"],
+} as const;
+
+interface FileUploadProps {
+  onConvert: (file: File) => void;
+  maxSizeMB?: number;
+  allowedGroups?: Array<keyof typeof FORMAT_GROUPS>;
+}
 
 export default function FileUpload({
   onConvert,
   maxSizeMB = 4,
-  allowedGroups = Object.keys(FORMAT_GROUPS).filter(
-    (group) => group !== "video"
-  ) as Array<keyof typeof FORMAT_GROUPS>,
+  allowedGroups = ["document", "image", "presentation"],
 }: FileUploadProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [error, setError] = useState<string>("");
@@ -44,20 +53,12 @@ export default function FileUpload({
 
     const fileGroup = getFileGroup(file);
 
-    // Check if it's a video format
-    if (fileGroup === "video") {
-      setError(
-        "Video formats are not available for demo. Please try other file formats."
-      );
-      return false;
-    }
-
     if (
       !fileGroup ||
       !allowedGroups.includes(fileGroup as keyof typeof FORMAT_GROUPS)
     ) {
       setError(
-        `Unsupported file type. Please upload one of the supported formats.`
+        `Unsupported file type. Please upload PDF, DOCX, JPG, or PPTX files only.`
       );
       return false;
     }
@@ -164,7 +165,7 @@ export default function FileUpload({
                 onClick={handleConvert}
                 className="bg-emerald-500 hover:bg-emerald-600 text-white"
               >
-                Convert
+                Upload File
               </Button>
             </div>
           )}
@@ -177,14 +178,19 @@ export default function FileUpload({
         )}
 
         <div className="mt-6">
-          <h3 className="text-sm font-medium mb-2">Supported Formats</h3>
+          <h3 className="text-sm font-medium mb-2 text-emerald-600 dark:text-emerald-400">
+            Supported File Types
+          </h3>
           <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
-            {allowedGroups.map((group) => (
-              <div key={group}>
-                <span className="font-medium">{group}:</span>{" "}
-                {FORMAT_GROUPS[group].join(", ")}
-              </div>
-            ))}
+            <div>
+              <span className="font-medium">Documents:</span> PDF, DOCX
+            </div>
+            <div>
+              <span className="font-medium">Images:</span> JPG, PNG
+            </div>
+            <div>
+              <span className="font-medium">Presentations:</span> PPTX, PPT
+            </div>
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
             Maximum size: {maxSizeMB}MB

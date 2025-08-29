@@ -7,26 +7,43 @@ import FileUpload from "@/components/file-upload/FileUpload";
 import { downloadFile } from "@/lib/utils/utils";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import type { ConversionFormat } from "@/types/FileConversionFormats";
-import {
-  CONVERSION_MAP,
-  MIME_TYPES,
-  FORMAT_DESCRIPTIONS,
-} from "@/lib/config/fileConversions";
+
+// Updated conversion configuration - ONLY the 6 supported conversions
+const CONVERSION_MAP: Record<string, string[]> = {
+  // PDF conversions
+  "application/pdf": ["docx", "jpg", "pptx"],
+  
+  // DOCX conversions
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": ["pdf"],
+  
+  // Image conversions (JPG/PNG → PDF)
+  "image/jpeg": ["pdf"],
+  "image/png": ["pdf"],
+  
+  // PPTX conversions
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation": ["pdf"],
+  "application/vnd.ms-powerpoint": ["pdf"],
+};
+
+const MIME_TYPES: Record<string, string> = {
+  pdf: "application/pdf",
+  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+};
+
+const FORMAT_DESCRIPTIONS: Record<string, string> = {
+  pdf: "Portable Document Format - Universal document format",
+  docx: "Microsoft Word Document - Editable text document",
+  jpg: "JPEG Image - Compressed image format",
+  jpeg: "JPEG Image - Compressed image format", 
+  pptx: "PowerPoint Presentation - Editable presentation format",
+};
 
 /**
  * FileConverterWrapper is a React component that provides a user interface for converting files
- * from one format to another. It allows users to upload a file, select a target format, and
- * initiate the conversion process. The component handles file type detection, displays available
- * conversion formats, and manages the conversion state and progress.
- *
- * Free users can try the file conversion feature five times. If they need to convert more than
- * five files, they are required to subscribe to one of our plans from the pricing page.
- *
- * @component
- * @example
- * return (
- *   <FileConverterWrapper />
- * )
+ * between specific formats: PDF ↔ DOCX, PDF ↔ JPG, PDF ↔ PPTX
  */
 export default function FileConverterWrapper() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -38,11 +55,6 @@ export default function FileConverterWrapper() {
   const getFileType = (file: File): string => {
     const extension = file.name.split(".").pop()?.toLowerCase();
     switch (extension) {
-      // Document formats
-      case "md":
-        return "text/markdown";
-      case "txt":
-        return "text/plain";
       case "jpg":
       case "jpeg":
         return "image/jpeg";
@@ -52,57 +64,36 @@ export default function FileConverterWrapper() {
         return "application/pdf";
       case "docx":
         return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-      case "xlsx":
-        return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-
-      // Presentation formats
       case "ppt":
         return "application/vnd.ms-powerpoint";
       case "pptx":
         return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-
-      // Ebook format
-      case "epub":
-        return "application/epub+zip";
-
-      // Data formats
-      case "csv":
-        return "text/csv";
-
-      // Audio formats
-      case "mp3":
-        return "audio/mpeg";
-      case "wav":
-        return "audio/wav";
-      case "ogg":
-        return "audio/ogg";
-      case "flac":
-        return "audio/flac";
       default:
         return file.type;
     }
   };
 
   const handleFileUpload = (file: File) => {
-    console.log("Uploaded file type:", file.type); // Debug log
-    console.log("Uploaded file name:", file.name); // Debug log
+    console.log("Uploaded file type:", file.type);
+    console.log("Uploaded file name:", file.name);
     setSelectedFile(file);
+    setError(""); // Clear any previous errors
   };
 
   // Get available conversion formats for the selected file
   const availableFormats = useMemo(() => {
     if (!selectedFile) return [];
-    const fileType = getFileType(selectedFile); // Use the custom function
-    console.log("Detected file type:", fileType); // Debug log
+    const fileType = getFileType(selectedFile);
+    console.log("Detected file type:", fileType);
     const formats = CONVERSION_MAP[fileType] || [];
-    console.log("Available formats:", formats); // Debug log
+    console.log("Available formats:", formats);
     return formats;
   }, [selectedFile]);
 
   // Set first available format when file is selected
   useMemo(() => {
     if (selectedFile && availableFormats.length > 0) {
-      setTargetFormat(availableFormats[0]);
+      setTargetFormat(availableFormats[0] as ConversionFormat);
     }
   }, [selectedFile, availableFormats]);
 
@@ -121,28 +112,31 @@ export default function FileConverterWrapper() {
       const buffer = event.target?.result as ArrayBuffer;
       const fileData = Buffer.from(buffer).toString("base64");
 
-      console.log("File type:", selectedFile.type); // Debug log
-      console.log("Target format:", targetFormat); // Debug log
-      console.log("File name:", selectedFile.name); // Debug log
+      console.log("File type:", selectedFile.type);
+      console.log("Target format:", targetFormat);
+      console.log("File name:", selectedFile.name);
 
       try {
-        const response = await fetch("/api/convert/file", {
+        // Use the NestJS backend
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001';
+        const response = await fetch(`${backendUrl}/api/convert/file`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
             fileData,
-            fileType: getFileType(selectedFile), // Use the custom function
+            fileType: getFileType(selectedFile),
             format: targetFormat,
             fileName: selectedFile.name,
           }),
         });
 
-        console.log("Response status:", response.status); // Debug log
+        console.log("Response status:", response.status);
 
         if (!response.ok) {
-          throw new Error(`Conversion failed: ${response.statusText}`);
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `Conversion failed: ${response.statusText}`);
         }
 
         const data = await response.json();
@@ -152,8 +146,7 @@ export default function FileConverterWrapper() {
         }
 
         const convertedData = Buffer.from(data.convertedData, "base64");
-        const outputFileName =
-          data.fileName || `converted-file.${targetFormat}`;
+        const outputFileName = data.fileName || `converted-file.${targetFormat}`;
 
         downloadFile(convertedData, outputFileName, MIME_TYPES[targetFormat]);
 
@@ -178,6 +171,13 @@ export default function FileConverterWrapper() {
     reader.readAsArrayBuffer(selectedFile);
   };
 
+  // Check if file is supported
+  const isFileSupported = useMemo(() => {
+    if (!selectedFile) return true;
+    const fileType = getFileType(selectedFile);
+    return CONVERSION_MAP.hasOwnProperty(fileType);
+  }, [selectedFile]);
+
   return (
     <section className="py-20 min-h-screen flex items-center">
       <div className="max-w-4xl mx-auto px-6 w-full">
@@ -188,20 +188,45 @@ export default function FileConverterWrapper() {
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 mb-4 max-w-2xl mx-auto leading-tight">
             Transform files seamlessly with our powerful conversion platform.
-            Upload, select your target format, and convert with enterprise-grade
-            reliability.
+            Upload, select your target format, and convert with enterprise-grade reliability.
           </p>
-          <p className="text-base text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
+          <p className="text-base text-gray-500 dark:text-gray-400 max-w-xl mx-auto mb-6">
             Free users can convert{" "}
             <span className="font-semibold text-emerald-600">5 FILES </span>
             daily. For more conversions, explore our plans.
           </p>
+          
+          {/* Supported Conversions Info
+          <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-4 max-w-2xl mx-auto">
+            <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300 mb-2">
+              Supported Conversions:
+            </p>
+            <div className="text-xs text-emerald-700 dark:text-emerald-400 space-y-1">
+              <div>PDF ↔ DOCX (Word Documents)</div>
+              <div>PDF ↔ JPG (Images)</div>
+              <div>PDF ↔ PPTX (PowerPoint)</div>
+            </div>
+          </div> */}
         </div>
 
         {/* Converter Section */}
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-2xl p-8 md:p-12 border-dashed border-2 border-emerald-400 dark:border-emerald-400 transition-all duration-300 hover:shadow-lg hover:border-emerald-300 dark:hover:border-emerald-300">
-          <FileUpload onConvert={handleFileUpload} maxSizeMB={4} />
-          {selectedFile && availableFormats.length > 0 && (
+          <FileUpload 
+            onConvert={handleFileUpload} 
+            maxSizeMB={4}
+            allowedGroups={["document", "image", "presentation"]}
+          />
+          
+          {selectedFile && !isFileSupported && (
+            <Alert variant="destructive" className="mt-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                This file type is not supported. Please upload PDF, DOCX, JPG, or PPTX files.
+              </AlertDescription>
+            </Alert>
+          )}
+
+          {selectedFile && isFileSupported && availableFormats.length > 0 && (
             <div className="mt-8 space-y-6">
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <div className="relative group">
@@ -275,7 +300,7 @@ export default function FileConverterWrapper() {
           )}
         </div>
 
-        {selectedFile && (
+        {selectedFile && isFileSupported && (
           <div className="mt-8 text-center">
             <p className="text-gray-600 dark:text-gray-400 text-sm">
               Need a different format?{" "}
