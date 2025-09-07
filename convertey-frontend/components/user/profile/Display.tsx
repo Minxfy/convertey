@@ -53,6 +53,55 @@ interface Analytics {
   totalFilesProcessed: number;
 }
 
+// Mock conversion history - replace with real data
+const mockConversionHistory: ConversionHistory[] = [
+  {
+    id: "1",
+    fileName: "document.pdf",
+    fromFormat: "PDF",
+    toFormat: "DOCX",
+    status: "completed",
+    createdAt: "2024-01-15T10:30:00Z",
+    fileSize: 2048000,
+  },
+  {
+    id: "2",
+    fileName: "spreadsheet.xlsx",
+    fromFormat: "XLSX",
+    toFormat: "CSV",
+    status: "completed",
+    createdAt: "2024-01-14T14:22:00Z",
+    fileSize: 1024000,
+  },
+  {
+    id: "3",
+    fileName: "presentation.pptx",
+    fromFormat: "PPTX",
+    toFormat: "PDF",
+    status: "failed",
+    createdAt: "2024-01-13T09:15:00Z",
+    fileSize: 5120000,
+  },
+  {
+    id: "4",
+    fileName: "image.png",
+    fromFormat: "PNG",
+    toFormat: "JPG",
+    status: "completed",
+    createdAt: "2024-01-12T16:45:00Z",
+    fileSize: 512000,
+  },
+  {
+    id: "5",
+    fileName: "report.docx",
+    fromFormat: "DOCX",
+    toFormat: "PDF",
+    status: "processing",
+    createdAt: "2024-01-11T11:20:00Z",
+    fileSize: 3072000,
+  },
+];
+
 export default function DisplayPage() {
   const [supabase] = useState(() => createSupabaseClient());
   const [userInfo, setUserInfo] = useState<UserInfo>({
@@ -67,22 +116,24 @@ export default function DisplayPage() {
     mostUsedFormat: "",
     totalFilesProcessed: 0,
   });
-  const [conversionHistory, setConversionHistory] = useState<ConversionHistory[]>([]);
+  const [conversionHistory, setConversionHistory] = useState<
+    ConversionHistory[]
+  >([]);
   const [loading, setLoading] = useState(true);
 
   // Mock analytics data - replace with real data from your backend
   const mockAnalyticsData = {
     conversionActivity: [
-      { date: '2024-01-01', conversions: 5, failed: 0 },
-      { date: '2024-01-02', conversions: 8, failed: 1 },
-      { date: '2024-01-03', conversions: 3, failed: 0 },
-      { date: '2024-01-04', conversions: 12, failed: 0 },
-      { date: '2024-01-05', conversions: 7, failed: 0 },
-      { date: '2024-01-06', conversions: 15, failed: 1 },
-      { date: '2024-01-07', conversions: 9, failed: 0 },
-      { date: '2024-01-08', conversions: 6, failed: 0 },
-      { date: '2024-01-09', conversions: 11, failed: 0 },
-      { date: '2024-01-10', conversions: 4, failed: 0 }
+      { date: "2024-01-01", conversions: 5, failed: 0 },
+      { date: "2024-01-02", conversions: 8, failed: 1 },
+      { date: "2024-01-03", conversions: 3, failed: 0 },
+      { date: "2024-01-04", conversions: 12, failed: 0 },
+      { date: "2024-01-05", conversions: 7, failed: 0 },
+      { date: "2024-01-06", conversions: 15, failed: 1 },
+      { date: "2024-01-07", conversions: 9, failed: 0 },
+      { date: "2024-01-08", conversions: 6, failed: 0 },
+      { date: "2024-01-09", conversions: 11, failed: 0 },
+      { date: "2024-01-10", conversions: 4, failed: 0 },
     ],
     formatDistribution: [
       { name: "PDF", value: 35, color: "#10B981" },
@@ -98,63 +149,16 @@ export default function DisplayPage() {
     ],
   };
 
-  // Mock conversion history - replace with real data
-  const mockConversionHistory: ConversionHistory[] = [
-    {
-      id: "1",
-      fileName: "document.pdf",
-      fromFormat: "PDF",
-      toFormat: "DOCX",
-      status: "completed",
-      createdAt: "2024-01-15T10:30:00Z",
-      fileSize: 2048000,
-    },
-    {
-      id: "2",
-      fileName: "spreadsheet.xlsx",
-      fromFormat: "XLSX",
-      toFormat: "CSV",
-      status: "completed",
-      createdAt: "2024-01-14T14:22:00Z",
-      fileSize: 1024000,
-    },
-    {
-      id: "3",
-      fileName: "presentation.pptx",
-      fromFormat: "PPTX",
-      toFormat: "PDF",
-      status: "failed",
-      createdAt: "2024-01-13T09:15:00Z",
-      fileSize: 5120000,
-    },
-    {
-      id: "4",
-      fileName: "image.png",
-      fromFormat: "PNG",
-      toFormat: "JPG",
-      status: "completed",
-      createdAt: "2024-01-12T16:45:00Z",
-      fileSize: 512000,
-    },
-    {
-      id: "5",
-      fileName: "report.docx",
-      fromFormat: "DOCX",
-      toFormat: "PDF",
-      status: "processing",
-      createdAt: "2024-01-11T11:20:00Z",
-      fileSize: 3072000,
-    },
-  ];
-
   // Fetch user data and analytics
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        
+
         // Fetch user data
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         if (user) {
           setUserInfo({
             fullName: user.user_metadata?.full_name || "Unknown User",
@@ -210,7 +214,9 @@ export default function DisplayPage() {
     };
 
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${variants[status]}`}>
+      <span
+        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${variants[status]}`}
+      >
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </span>
     );
@@ -222,7 +228,9 @@ export default function DisplayPage() {
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Loading dashboard...</p>
+            <p className="text-gray-600 dark:text-gray-400">
+              Loading dashboard...
+            </p>
           </div>
         </div>
       </div>
@@ -283,8 +291,12 @@ export default function DisplayPage() {
                   <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-lg p-3 sm:p-6 text-white h-32 md:h-40">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-emerald-100 text-base font-medium md:text-sm">Total Conversions</p>
-                        <p className="text-3xl font-bold">{analytics.totalConversions}</p>
+                        <p className="text-emerald-100 text-base font-medium md:text-sm">
+                          Total Conversions
+                        </p>
+                        <p className="text-3xl font-bold">
+                          {analytics.totalConversions}
+                        </p>
                       </div>
                       <FileText className="h-8 w-8 text-emerald-200 sm:h-8 sm:w-8 sm:text-2xl md:h-10 md:w-10" />
                     </div>
@@ -293,8 +305,12 @@ export default function DisplayPage() {
                   <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-3 sm:p-6 text-white h-32 md:h-40">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-purple-100 text-base font-medium md:text-sm">Files Processed (GB)</p>
-                        <p className="text-3xl font-bold">{analytics.totalFilesProcessed}</p>
+                        <p className="text-purple-100 text-base font-medium md:text-sm">
+                          Files Processed (GB)
+                        </p>
+                        <p className="text-3xl font-bold">
+                          {analytics.totalFilesProcessed}
+                        </p>
                       </div>
                       <Upload className="h-8 w-8 text-purple-200 sm:h-8 sm:w-8 sm:text-2xl md:h-10 md:w-10" />
                     </div>
@@ -321,18 +337,18 @@ export default function DisplayPage() {
                       <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                       <XAxis dataKey="date" stroke="#6b7280" />
                       <YAxis stroke="#6b7280" />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#1f2937', 
-                          border: '1px solid #374151',
-                          borderRadius: '8px'
-                        }} 
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "#1f2937",
+                          border: "1px solid #374151",
+                          borderRadius: "8px",
+                        }}
                       />
-                      <Area 
-                        type="monotone" 
-                        dataKey="conversions" 
-                        stroke="#10b981" 
-                        fill="#10b981" 
+                      <Area
+                        type="monotone"
+                        dataKey="conversions"
+                        stroke="#10b981"
+                        fill="#10b981"
                         fillOpacity={0.3}
                       />
                     </AreaChart>
@@ -354,14 +370,18 @@ export default function DisplayPage() {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                        label={({ name, percent }) =>
+                          `${name} ${(percent * 100).toFixed(0)}%`
+                        }
                         outerRadius={80}
                         fill="#8884d8"
                         dataKey="value"
                       >
-                        {mockAnalyticsData.formatDistribution.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
+                        {mockAnalyticsData.formatDistribution.map(
+                          (entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          )
+                        )}
                       </Pie>
                       <Tooltip />
                     </PieChart>
@@ -393,7 +413,9 @@ export default function DisplayPage() {
                           </span>
                         </div>
                         <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-                          <span>{conversion.fromFormat} → {conversion.toFormat}</span>
+                          <span>
+                            {conversion.fromFormat} → {conversion.toFormat}
+                          </span>
                           <span>•</span>
                           <span>{formatFileSize(conversion.fileSize)}</span>
                           <span>•</span>

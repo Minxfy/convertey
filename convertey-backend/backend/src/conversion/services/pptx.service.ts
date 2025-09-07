@@ -12,13 +12,12 @@ export class PptxService {
     try {
       // Extract text content from PPTX
       const textContent = this.extractTextFromPptx(pptxBuffer);
-      
+
       // Create PDF from extracted content
       const pdfBuffer = await this.createPdfFromPptxContent(textContent);
       return pdfBuffer;
     } catch (error) {
       throw new HttpException(
-         
         `PPTX to PDF conversion failed: ${error.message}`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
@@ -33,11 +32,12 @@ export class PptxService {
 
       // Get all slide entries
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      const slideEntries = zip.getEntries().filter(entry => 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-        entry.entryName.startsWith('ppt/slides/slide') && 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        entry.entryName.endsWith('.xml')
+      const slideEntries = zip.getEntries().filter(
+        (entry) =>
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+          entry.entryName.startsWith('ppt/slides/slide') &&
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+          entry.entryName.endsWith('.xml'),
       );
 
       for (const entry of slideEntries) {
@@ -47,10 +47,14 @@ export class PptxService {
         slides.push(textContent);
       }
 
-      return slides.length > 0 ? slides : ['PowerPoint presentation converted to PDF'];
+      return slides.length > 0
+        ? slides
+        : ['PowerPoint presentation converted to PDF'];
     } catch (error) {
       console.warn('Text extraction failed, using fallback:', error.message);
-      return ['PowerPoint presentation converted to PDF (text extraction failed)'];
+      return [
+        'PowerPoint presentation converted to PDF (text extraction failed)',
+      ];
     }
   }
 
@@ -63,12 +67,12 @@ export class PptxService {
       }
 
       const texts = textMatches
-        .map(match => match.replace(/<[^>]*>/g, ''))
-        .filter(text => text.trim().length > 0)
+        .map((match) => match.replace(/<[^>]*>/g, ''))
+        .filter((text) => text.trim().length > 0)
         .join(' ');
 
       return texts || 'Slide content';
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       return 'Slide content (text parsing failed)';
     }
@@ -77,7 +81,7 @@ export class PptxService {
   private async createPdfFromPptxContent(slides: string[]): Promise<Buffer> {
     return new Promise((resolve, reject) => {
       const chunks: Buffer[] = [];
-      
+
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       const doc = new PDFDocument({
         margin: 50,
@@ -100,21 +104,23 @@ export class PptxService {
 
           // Add slide header
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          doc.fontSize(16)
-             .font('Helvetica-Bold')
-             .text(`Slide ${index + 1}`, { align: 'center' });
-          
+          doc
+            .fontSize(16)
+            .font('Helvetica-Bold')
+            .text(`Slide ${index + 1}`, { align: 'center' });
+
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           doc.moveDown();
 
           // Add slide content
           // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          doc.fontSize(12)
-             .font('Helvetica')
-             .text(slideContent, {
-               width: doc.page.width - 100,
-               align: 'left',
-             });
+          doc
+            .fontSize(12)
+            .font('Helvetica')
+            .text(slideContent, {
+              width: doc.page.width - 100,
+              align: 'left',
+            });
         });
 
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call

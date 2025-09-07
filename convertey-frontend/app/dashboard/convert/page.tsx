@@ -110,7 +110,7 @@ export default function ConvertPage() {
 
   useMemo(() => {
     if (file && availableFormats.length > 0) {
-      setOutputFormat(availableFormats[0]);
+      setOutputFormat(availableFormats[0] as ConversionFormat);
     }
   }, [file, availableFormats]);
 

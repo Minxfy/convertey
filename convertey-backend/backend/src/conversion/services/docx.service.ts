@@ -24,7 +24,6 @@ export class DocxService {
       return pdfBuffer;
     } catch (error) {
       throw new HttpException(
-         
         `DOCX to PDF conversion failed: ${error.message}`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
