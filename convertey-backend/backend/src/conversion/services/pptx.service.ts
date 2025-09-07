@@ -1,6 +1,6 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+ 
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import PDFDocument from 'pdfkit';
@@ -27,21 +27,21 @@ export class PptxService {
 
   private extractTextFromPptx(pptxBuffer: Buffer): string[] {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+       
       const zip = new AdmZip(pptxBuffer);
       const slides: string[] = [];
 
       // Get all slide entries
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+       
       const slideEntries = zip.getEntries().filter(entry => 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
+         
         entry.entryName.startsWith('ppt/slides/slide') && 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+         
         entry.entryName.endsWith('.xml')
       );
 
       for (const entry of slideEntries) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+         
         const slideXml = entry.getData().toString('utf8');
         const textContent = this.extractTextFromSlideXml(slideXml);
         slides.push(textContent);
@@ -78,37 +78,37 @@ export class PptxService {
     return new Promise((resolve, reject) => {
       const chunks: Buffer[] = [];
       
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+       
       const doc = new PDFDocument({
         margin: 50,
         size: 'A4',
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+       
       doc.on('data', (chunk) => chunks.push(chunk));
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+       
       doc.on('end', () => resolve(Buffer.concat(chunks)));
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+       
       doc.on('error', reject);
 
       try {
         slides.forEach((slideContent, index) => {
           if (index > 0) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+             
             doc.addPage();
           }
 
           // Add slide header
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+           
           doc.fontSize(16)
              .font('Helvetica-Bold')
              .text(`Slide ${index + 1}`, { align: 'center' });
           
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+           
           doc.moveDown();
 
           // Add slide content
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+           
           doc.fontSize(12)
              .font('Helvetica')
              .text(slideContent, {
@@ -117,7 +117,7 @@ export class PptxService {
              });
         });
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+         
         doc.end();
       } catch (error) {
         reject(new Error(`PDF creation failed: ${error.message}`));
