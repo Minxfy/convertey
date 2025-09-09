@@ -4,20 +4,20 @@ import {
   Body,
   HttpException,
   HttpStatus,
-} from '@nestjs/common';
-import { ConversionService } from './conversion.service';
-import { ConversionDto, ConversionResponse } from './dto/conversion.dto';
+} from "@nestjs/common";
+import { ConversionService } from "./conversion.service";
+import { ConversionDto, ConversionResponse } from "./dto/conversion.dto";
 
-@Controller('convert')
+@Controller("convert")
 export class ConversionController {
   constructor(private readonly conversionService: ConversionService) {}
 
-  @Post('file')
+  @Post("file")
   async convertFile(
-    @Body() conversionDto: ConversionDto,
+    @Body() conversionDto: ConversionDto
   ): Promise<ConversionResponse> {
     try {
-      console.log('Conversion request:', {
+      console.log("Conversion request:", {
         fileType: conversionDto.fileType,
         format: conversionDto.format,
         fileName: conversionDto.fileName,
@@ -26,7 +26,7 @@ export class ConversionController {
       const result = await this.conversionService.convertFile(conversionDto);
       return result;
     } catch (error) {
-      console.error('Conversion error:', error);
+      console.error("Conversion error:", error);
 
       if (error instanceof HttpException) {
         throw error;
@@ -34,11 +34,11 @@ export class ConversionController {
 
       throw new HttpException(
         {
-          message: 'Conversion failed',
+          message: "Conversion failed",
           // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-          error: error.message || 'Unknown error occurred',
+          error: error.message || "Unknown error occurred",
         },
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
