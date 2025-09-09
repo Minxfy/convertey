@@ -1,5 +1,4 @@
-/* eslint-disable prettier/prettier */
-import { IsString, IsNotEmpty, IsIn } from 'class-validator';
+import { IsString, IsNotEmpty, IsIn } from "class-validator";
 
 export class ConversionDto {
   @IsString()
@@ -9,18 +8,18 @@ export class ConversionDto {
   @IsString()
   @IsNotEmpty()
   @IsIn([
-    'application/pdf',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'image/jpeg',
-    'image/png',
-    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    'application/vnd.ms-powerpoint',
+    "application/pdf",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "image/jpeg",
+    "image/png",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "application/vnd.ms-powerpoint",
   ])
   fileType: string;
 
   @IsString()
   @IsNotEmpty()
-  @IsIn(['pdf', 'docx', 'jpg', 'jpeg', 'png', 'pptx'])
+  @IsIn(["pdf", "docx", "jpg", "jpeg", "png", "pptx"])
   format: string;
 
   @IsString()
