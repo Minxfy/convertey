@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Module } from '@nestjs/common';
 import { ConversionController } from './conversion.controller';
 import { ConversionService } from './conversion.service';
