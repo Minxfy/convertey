@@ -1,11 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable prettier/prettier */
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import * as mammoth from 'mammoth';
-import PDFDocument from 'pdfkit';
+import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
+import * as mammoth from "mammoth";
+import PDFDocument from "pdfkit";
 
 @Injectable()
 export class DocxService {
@@ -16,16 +11,16 @@ export class DocxService {
       const text = result.value;
 
       if (!text || text.trim().length === 0) {
-        throw new Error('No text content found in DOCX file');
+        throw new Error("No text content found in DOCX file");
       }
 
       // Create PDF from extracted text
       const pdfBuffer = await this.createPdfFromText(text);
       return pdfBuffer;
-    } catch (error) {
+    } catch (error: any) {
       throw new HttpException(
-        `DOCX to PDF conversion failed: ${error.message}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        `DOCX to PDF conversion failed: ${error as Error}.message`,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
@@ -37,27 +32,27 @@ export class DocxService {
       // Create PDF document
       const doc = new PDFDocument({
         margin: 50,
-        size: 'A4',
+        size: "A4",
       });
 
       // Collect PDF chunks
-      doc.on('data', (chunk) => chunks.push(chunk));
-      doc.on('end', () => resolve(Buffer.concat(chunks)));
-      doc.on('error', reject);
+      doc.on("data", (chunk: Buffer) => chunks.push(chunk));
+      doc.on("end", () => resolve(Buffer.concat(chunks)));
+      doc.on("error", reject);
 
       // Add content to PDF
       try {
         // Set font and basic styling
         doc.fontSize(12);
-        doc.font('Helvetica');
+        doc.font("Helvetica");
 
         // Split text into paragraphs and add to PDF
-        const paragraphs = text.split('\n').filter((p) => p.trim().length > 0);
+        const paragraphs = text.split("\n").filter((p) => p.trim().length > 0);
 
         if (paragraphs.length === 0) {
-          doc.text('Document converted from DOCX', { align: 'center' });
+          doc.text("Document converted from DOCX", { align: "center" });
           doc.moveDown();
-          doc.text('(No readable content found)', { align: 'center' });
+          doc.text("(No readable content found)", { align: "center" });
         } else {
           paragraphs.forEach((paragraph, index) => {
             if (index > 0) {
@@ -65,14 +60,14 @@ export class DocxService {
             }
             doc.text(paragraph.trim(), {
               width: doc.page.width - 100, // Account for margins
-              align: 'left',
+              align: "left",
             });
           });
         }
 
         doc.end();
-      } catch (error) {
-        reject(new Error(`PDF creation failed: ${error.message}`));
+      } catch (error: any) {
+        reject(new Error(`PDF creation failed: ${error as Error}.message`));
       }
     });
   }

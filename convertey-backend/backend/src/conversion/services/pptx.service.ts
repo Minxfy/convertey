@@ -1,10 +1,6 @@
-/* eslint-disable prettier/prettier */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import PDFDocument from 'pdfkit';
-import AdmZip from 'adm-zip';
+import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
+import PDFDocument from "pdfkit";
+import AdmZip from "adm-zip";
 
 @Injectable()
 export class PptxService {
@@ -16,44 +12,44 @@ export class PptxService {
       // Create PDF from extracted content
       const pdfBuffer = await this.createPdfFromPptxContent(textContent);
       return pdfBuffer;
-    } catch (error) {
+    } catch (error: any) {
       throw new HttpException(
-        `PPTX to PDF conversion failed: ${error.message}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        `PPTX to PDF conversion failed: ${error as Error}.message`,
+        HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
   }
 
   private extractTextFromPptx(pptxBuffer: Buffer): string[] {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       const zip = new AdmZip(pptxBuffer);
       const slides: string[] = [];
 
       // Get all slide entries
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      const slideEntries = zip.getEntries().filter(
-        (entry) =>
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call
-          entry.entryName.startsWith('ppt/slides/slide') &&
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-          entry.entryName.endsWith('.xml'),
-      );
+      const slideEntries = zip
+        .getEntries()
+        .filter(
+          (entry) =>
+            entry.entryName.startsWith("ppt/slides/slide") &&
+            entry.entryName.endsWith(".xml")
+        );
 
       for (const entry of slideEntries) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        const slideXml = entry.getData().toString('utf8');
+        const slideXml = entry.getData().toString("utf8");
         const textContent = this.extractTextFromSlideXml(slideXml);
         slides.push(textContent);
       }
 
       return slides.length > 0
         ? slides
-        : ['PowerPoint presentation converted to PDF'];
-    } catch (error) {
-      console.warn('Text extraction failed, using fallback:', error.message);
+        : ["PowerPoint presentation converted to PDF"];
+    } catch (error: any) {
+      console.warn(
+        "Text extraction failed, using fallback:",
+        error instanceof Error ? error.message : String(error)
+      );
       return [
-        'PowerPoint presentation converted to PDF (text extraction failed)',
+        "PowerPoint presentation converted to PDF (text extraction failed)",
       ];
     }
   }
@@ -63,18 +59,18 @@ export class PptxService {
       // Simple regex to extract text content from XML
       const textMatches = xml.match(/<a:t[^>]*>([^<]*)<\/a:t>/g);
       if (!textMatches) {
-        return 'Slide content (no readable text found)';
+        return "Slide content (no readable text found)";
       }
 
       const texts = textMatches
-        .map((match) => match.replace(/<[^>]*>/g, ''))
+        .map((match) => match.replace(/<[^>]*>/g, ""))
         .filter((text) => text.trim().length > 0)
-        .join(' ');
+        .join(" ");
 
-      return texts || 'Slide content';
+      return texts || "Slide content";
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-      return 'Slide content (text parsing failed)';
+      return "Slide content (text parsing failed)";
     }
   }
 
@@ -82,51 +78,42 @@ export class PptxService {
     return new Promise((resolve, reject) => {
       const chunks: Buffer[] = [];
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       const doc = new PDFDocument({
         margin: 50,
-        size: 'A4',
+        size: "A4",
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      doc.on('data', (chunk) => chunks.push(chunk));
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      doc.on('end', () => resolve(Buffer.concat(chunks)));
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-      doc.on('error', reject);
+      doc.on("data", (chunk: Buffer) => chunks.push(chunk));
+      doc.on("end", () => resolve(Buffer.concat(chunks)));
+      doc.on("error", reject);
 
       try {
         slides.forEach((slideContent, index) => {
           if (index > 0) {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-call
             doc.addPage();
           }
 
           // Add slide header
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           doc
             .fontSize(16)
-            .font('Helvetica-Bold')
-            .text(`Slide ${index + 1}`, { align: 'center' });
+            .font("Helvetica-Bold")
+            .text(`Slide ${index + 1}`, { align: "center" });
 
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           doc.moveDown();
 
           // Add slide content
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-call
           doc
             .fontSize(12)
-            .font('Helvetica')
+            .font("Helvetica")
             .text(slideContent, {
               width: doc.page.width - 100,
-              align: 'left',
+              align: "left",
             });
         });
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         doc.end();
-      } catch (error) {
-        reject(new Error(`PDF creation failed: ${error.message}`));
+      } catch (error: any) {
+        reject(new Error(`PDF creation failed: ${error as Error}.message`));
       }
     });
   }
