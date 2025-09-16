@@ -4,8 +4,8 @@ import Image from "next/image";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Sun,
-  Moon,
+  // Sun,
+  // Moon,
   Menu,
   User,
   Info,
@@ -38,7 +38,7 @@ export default function Header({
   /**  If `true`, the header will *never* show the signed‑in state  */
   forceUnauthenticated?: boolean;
 }) {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode] = useState(false); //  const [darkMode, setDarkMode] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [user, setUser] = useState<{ id: string; email: string } | null>(null);
@@ -73,7 +73,10 @@ export default function Header({
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setProfileDropdownOpen(false);
       }
     };
@@ -164,7 +167,7 @@ export default function Header({
           <NavLink href="/pricing">Pricing</NavLink>
           <NavLink href="/contact">Contact Us</NavLink>
           <NavLink href="/donate">Donate</NavLink>
-          <Button
+          {/* <Button
             variant="outline"
             size="icon"
             onClick={() => setDarkMode(!darkMode)}
@@ -176,7 +179,7 @@ export default function Header({
             ) : (
               <Moon className="h-5 w-5" />
             )}
-          </Button>
+          </Button> */}
 
           {/* ---------- Auth controls (hidden if forceUnauthenticated) ---------- */}
           {effectiveUser ? (
@@ -189,9 +192,13 @@ export default function Header({
                   className="rounded-full border-emerald-400 dark:border-emerald-600 text-emerald-600 dark:text-emerald-400 flex items-center space-x-2"
                 >
                   <User className="h-4 w-4" />
-                  <ChevronDown className={`h-4 w-4 transition-transform ${profileDropdownOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown
+                    className={`h-4 w-4 transition-transform ${
+                      profileDropdownOpen ? "rotate-180" : ""
+                    }`}
+                  />
                 </Button>
-                
+
                 {profileDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700">
                     <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
@@ -261,7 +268,7 @@ export default function Header({
 
         {/* -------------------- Mobile buttons -------------------- */}
         <div className="md:hidden flex items-center">
-          <Button
+          {/* <Button
             variant="outline"
             size="icon"
             onClick={() => setDarkMode(!darkMode)}
@@ -273,7 +280,7 @@ export default function Header({
             ) : (
               <Moon className="h-5 w-5" />
             )}
-          </Button>
+          </Button> */}
           <Button
             variant="ghost"
             size="icon"
