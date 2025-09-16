@@ -50,65 +50,68 @@ export default function DonationPage() {
         </div>
 
         {/* Main Content */}
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Donation Form */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-3 order-1">
             <Card className="flex flex-col shadow-xl border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm h-full">
               <CardHeader>
                 <CardTitle className="text-2xl font-semibold flex items-center gap-2">
-                  <div className="w-2 h- bg-gradient-to-b from-emerald-500 to-emerald-600 rounded-full"></div>
+                  <div className="w-2 h-6 bg-gradient-to-b from-emerald-500 to-emerald-600 rounded-full"></div>
                   Donate to Convertey
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-grow">
                 <DonationForm />
               </CardContent>
             </Card>
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Alternative Donation Methods */}
-            <Card className="shadow-xl border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-xl font-semibold flex items-center gap-2">
-                  <div className="w-2 h-6 bg-gradient-to-b from-emerald-500 to-emerald-600 rounded-full"></div>
-                  Other Ways to Help
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ExternalDonationLinks />
-              </CardContent>
-            </Card>
-
-            {/* Impact Card */}
-            <Card className="shadow-xl border-0 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white">
-              <CardContent className="p-6">
-                <h3 className="font-semibold text-lg mb-4">Your Impact</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                      <Shield className="w-4 h-4" />
+          <div className="lg:col-span-3 order-2 grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="space-y-6">
+              {/* Alternative Donation Methods */}
+              <Card className="shadow-xl border-0 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-xl font-semibold flex items-center gap-2">
+                    <div className="w-2 h-6 bg-gradient-to-b from-emerald-500 to-emerald-600 rounded-full"></div>
+                    Other Ways to Help
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ExternalDonationLinks />
+                </CardContent>
+              </Card>
+            </div>
+            <div className="space-y-6">
+              {/* Impact Card */}
+              <Card className="shadow-xl border-0 bg-gradient-to-br from-emerald-500 to-emerald-600 text-white h-full">
+                <CardContent className="p-6">
+                  <h3 className="font-semibold text-lg mb-4">Your Impact</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                        <Shield className="w-4 h-4" />
+                      </div>
+                      <span className="text-sm">
+                        Secure server infrastructure
+                      </span>
                     </div>
-                    <span className="text-sm">
-                      Secure server infrastructure
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                      <Zap className="w-4 h-4" />
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                        <Zap className="w-4 h-4" />
+                      </div>
+                      <span className="text-sm">Faster conversion speeds</span>
                     </div>
-                    <span className="text-sm">Faster conversion speeds</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                      <Users className="w-4 h-4" />
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+                        <Users className="w-4 h-4" />
+                      </div>
+                      <span className="text-sm">Free access for everyone</span>
                     </div>
-                    <span className="text-sm">Free access for everyone</span>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
